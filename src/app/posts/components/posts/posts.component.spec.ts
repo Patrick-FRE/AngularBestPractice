@@ -5,6 +5,8 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { PostsService } from '../../services/posts.service';
 import { CommentsService } from '../../services/comments.service';
 import { ModalService } from '../../../shared/services/modal.service';
+import { of } from 'rxjs';
+import { By } from '@angular/platform-browser';
 
 // import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
@@ -54,13 +56,28 @@ import { ModalService } from '../../../shared/services/modal.service';
 //   });
 // });
 
-const PostsServiceStub = {};
+const PostsServiceStub = jasmine.createSpyObj('postsService', ['getPosts']);
 const CommentsServiceStub = {};
 const ModalServiceStub = {};
+
+const mockData = [
+  {
+    body:
+      'et cum↵reprehenderit molestiae ut ut quas totam↵nostrum rerum est autem sunt rem eveniet architecto',
+    id: 1,
+    title:
+      'sunt aut facere repellat provident occaecati excepturi optio reprehenderit',
+    userId: 1,
+  },
+];
 
 describe('PostsComponent', () => {
   let component: PostsComponent;
   let fixture: ComponentFixture<PostsComponent>;
+
+  const postServiceSpy = PostsServiceStub.getPosts.and.returnValue(
+    of(mockData)
+  );
   beforeEach(async () => {
     TestBed.configureTestingModule({
       declarations: [PostsComponent],
@@ -68,8 +85,8 @@ describe('PostsComponent', () => {
       providers: [
         { provide: PostsService, useValue: PostsServiceStub },
         { provide: ModalService, useValue: ModalServiceStub },
-        { provide: CommentsService, useValue: CommentsServiceStub }
-      ]
+        { provide: CommentsService, useValue: CommentsServiceStub },
+      ],
     }).compileComponents();
   });
 
@@ -93,5 +110,15 @@ describe('PostsComponent', () => {
     expect(clearPostsBtnElement).toBeTruthy();
   });
 
-  it('should display posts list if you click getPosts button', () => {});
+  it('should display posts list if you click getPosts button', () => {
+    fixture = TestBed.createComponent(PostsComponent);
+    component = fixture.debugElement.componentInstance;
+    const btnGetDe = fixture.debugElement.query(By.css('.btnGetPosts'));
+    btnGetDe.triggerEventHandler('click', null);
+    fixture.detectChanges();
+    const tableElment = fixture.nativeElement.querySelector('.posts-table');
+    expect(tableElment).toBeTruthy();
+    const rows = tableElment.querySelectorAll('tr');
+    expect(rows.length).toBe(2);
+  });
 });

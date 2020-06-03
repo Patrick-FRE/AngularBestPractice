@@ -8,7 +8,7 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 @Component({
   selector: 'app-posts',
   templateUrl: './posts.component.html',
-  styleUrls: ['./posts.component.scss']
+  styleUrls: ['./posts.component.scss'],
 })
 export class PostsComponent implements OnInit {
   posts: Post[] = [];
@@ -23,7 +23,8 @@ export class PostsComponent implements OnInit {
   ngOnInit() {}
 
   getPosts() {
-    this.postsService.getPosts().subscribe(data => {
+    this.postsService.getPosts().subscribe((data) => {
+      console.log(data);
       this.posts = data;
     });
   }
@@ -32,7 +33,7 @@ export class PostsComponent implements OnInit {
   }
 
   showComments(id) {
-    this.commentsService.getCommentsByPostId(id).subscribe(data => {
+    this.commentsService.getCommentsByPostId(id).subscribe((data) => {
       this.comments = data;
       this.modalService.showModal('comments-modal');
     });
